@@ -18,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'inter': ['Inter', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -52,6 +55,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Educational color palette
+				'course-purple': 'hsl(var(--course-purple))',
+				'course-purple-fg': 'hsl(var(--course-purple-fg))',
+				'course-yellow': 'hsl(var(--course-yellow))',
+				'course-yellow-fg': 'hsl(var(--course-yellow-fg))',
+				'course-blue': 'hsl(var(--course-blue))',
+				'course-blue-fg': 'hsl(var(--course-blue-fg))',
+				'course-green': 'hsl(var(--course-green))',
+				'course-green-fg': 'hsl(var(--course-green-fg))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
