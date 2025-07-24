@@ -202,24 +202,24 @@ export default function StaffDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <div className="grid grid-cols-6 gap-2 min-w-[700px]">
+                  <div className="grid grid-cols-10 gap-2 min-w-[1000px]">
                     {/* Header row */}
                     <div className="font-semibold text-center p-2 bg-muted rounded-lg text-sm">
-                      Time
+                      Day
                     </div>
-                    {days.map((day) => (
-                      <div key={day} className="font-semibold text-center p-2 bg-muted rounded-lg text-sm">
-                        {day}
+                    {timeSlots.map((time) => (
+                      <div key={time} className="font-semibold text-center p-2 bg-muted rounded-lg text-sm">
+                        {time}
                       </div>
                     ))}
 
-                    {/* Time slots */}
-                    {timeSlots.map((time) => (
-                      <div key={time} className="contents">
+                    {/* Days */}
+                    {days.map((day) => (
+                      <div key={day} className="contents">
                         <div className="text-xs font-medium text-center p-2 bg-card border rounded-lg">
-                          {time}
+                          {day}
                         </div>
-                        {days.map((day) => {
+                        {timeSlots.map((time) => {
                           const classData = staffTimetable[day]?.[time];
                           return (
                             <div

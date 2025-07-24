@@ -136,24 +136,24 @@ export default function PublicTimetable() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <div className="grid grid-cols-6 gap-2 min-w-[800px]">
+                <div className="grid grid-cols-10 gap-2 min-w-[1200px]">
                   {/* Header row */}
                   <div className="font-semibold text-center p-3 bg-muted rounded-lg">
-                    Time
+                    Day
                   </div>
-                  {days.map((day) => (
-                    <div key={day} className="font-semibold text-center p-3 bg-muted rounded-lg">
-                      {day}
+                  {timeSlots.map((time) => (
+                    <div key={time} className="font-semibold text-center p-3 bg-muted rounded-lg">
+                      {time}
                     </div>
                   ))}
 
-                  {/* Time slots */}
-                  {timeSlots.map((time) => (
-                    <div key={time} className="contents">
+                  {/* Days */}
+                  {days.map((day) => (
+                    <div key={day} className="contents">
                       <div className="text-sm font-medium text-center p-3 bg-card border rounded-lg">
-                        {time}
+                        {day}
                       </div>
-                      {days.map((day) => {
+                      {timeSlots.map((time) => {
                         const classData = sampleTimetable[day]?.[time];
                         return (
                           <div
