@@ -7,31 +7,22 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Filter, Clock } from 'lucide-react';
 
 export default function PublicTimetable() {
-  const [selectedSemester, setSelectedSemester] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
 
   const departments = [
     'Computer Science',
-    'Electronics', 
+    'Electronics',
     'Mechanical',
     'Civil',
     'Information Technology'
   ];
 
-  const semesters = ['1', '2', '3', '4', '5', '6', '7', '8'];
+  const years = ['1', '2', '3', '4'];
 
   const timeSlots = [
-    { period: 'QCPC', time: '8:50 AM - 9:05 AM' },
-    { period: 'Period 1', time: '9:05 AM - 10:00 AM' },
-    { period: 'Period 2', time: '10:00 AM - 10:50 AM' },
-    { period: 'Break', time: '10:50 AM - 11:10 AM' },
-    { period: 'Period 3', time: '11:10 AM - 12:00 PM' },
-    { period: 'Period 4', time: '12:00 PM - 12:50 PM' },
-    { period: 'Lunch', time: '12:50 PM - 1:30 PM' },
-    { period: 'Period 5', time: '1:30 PM - 2:20 PM' },
-    { period: 'Period 6', time: '2:20 PM - 3:10 PM' },
-    { period: 'Period 7', time: '3:10 PM - 4:00 PM' },
-    { period: 'Period 8', time: '4:00 PM - 4:15 PM' }
+    '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
+    '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
   ];
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -57,7 +48,7 @@ export default function PublicTimetable() {
     return 'course-card-purple';
   };
 
-  const showTimetable = selectedSemester && selectedDepartment;
+  const showTimetable = selectedYear && selectedDepartment;
 
   return (
     <Layout>
@@ -85,15 +76,15 @@ export default function PublicTimetable() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Semester</label>
-                <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                <label className="text-sm font-medium">Academic Year</label>
+                <Select value={selectedYear} onValueChange={setSelectedYear}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select semester" />
+                    <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {semesters.map((semester) => (
-                      <SelectItem key={semester} value={semester}>
-                        Semester {semester}
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        Year {year}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -119,7 +110,7 @@ export default function PublicTimetable() {
               <div className="flex items-end">
                 <Button 
                   className="w-full"
-                  disabled={!selectedSemester || !selectedDepartment}
+                  disabled={!selectedYear || !selectedDepartment}
                 >
                   View Timetable
                 </Button>
@@ -135,7 +126,7 @@ export default function PublicTimetable() {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Clock className="w-5 h-5" />
-                  <span>Semester {selectedSemester} - {selectedDepartment}</span>
+                  <span>Year {selectedYear} - {selectedDepartment}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="course-card-purple">Lecture</Badge>
@@ -150,10 +141,9 @@ export default function PublicTimetable() {
                   <div className="font-semibold text-center p-3 bg-muted rounded-lg">
                     Day
                   </div>
-                  {timeSlots.map((slot) => (
-                    <div key={slot.period} className="font-semibold text-center p-3 bg-muted rounded-lg text-sm">
-                      <div>{slot.period}</div>
-                      <div className="text-xs opacity-80">{slot.time}</div>
+                  {timeSlots.map((time) => (
+                    <div key={time} className="font-semibold text-center p-3 bg-muted rounded-lg">
+                      {time}
                     </div>
                   ))}
 

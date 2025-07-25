@@ -11,7 +11,6 @@ import StaffDashboard from "./pages/StaffDashboard";
 import AddStaff from "./pages/AddStaff";
 import AddSubjects from "./pages/AddSubjects";
 import GenerateTimetable from "./pages/GenerateTimetable";
-import Configuration from "./pages/Configuration";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,7 +29,6 @@ const App = () => (
           <Route path="/admin/staff" element={<AddStaff />} />
           <Route path="/admin/subjects" element={<AddSubjects />} />
           <Route path="/admin/timetable" element={<GenerateTimetable />} />
-          <Route path="/admin/configuration" element={<Configuration />} />
           <Route path="/staff" element={<StaffDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
