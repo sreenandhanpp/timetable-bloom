@@ -99,6 +99,11 @@
     @apply text-course-green-fg;
   }
 
+  .course-card-orange {
+    background: linear-gradient(135deg, hsl(25, 95%, 53%), hsl(25, 95%, 63%));
+    color: white;
+  }
+
   .card-shadow {
     box-shadow: var(--shadow-card);
   }

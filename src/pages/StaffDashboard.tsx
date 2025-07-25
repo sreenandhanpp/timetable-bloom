@@ -15,8 +15,17 @@ import {
 
 export default function StaffDashboard() {
   const timeSlots = [
-    '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
-    '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
+    { period: 'QCPC', time: '8:50 AM - 9:05 AM' },
+    { period: 'Period 1', time: '9:05 AM - 10:00 AM' },
+    { period: 'Period 2', time: '10:00 AM - 10:50 AM' },
+    { period: 'Break', time: '10:50 AM - 11:10 AM' },
+    { period: 'Period 3', time: '11:10 AM - 12:00 PM' },
+    { period: 'Period 4', time: '12:00 PM - 12:50 PM' },
+    { period: 'Lunch', time: '12:50 PM - 1:30 PM' },
+    { period: 'Period 5', time: '1:30 PM - 2:20 PM' },
+    { period: 'Period 6', time: '2:20 PM - 3:10 PM' },
+    { period: 'Period 7', time: '3:10 PM - 4:00 PM' },
+    { period: 'Period 8', time: '4:00 PM - 4:15 PM' }
   ];
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
