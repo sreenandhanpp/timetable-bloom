@@ -25,6 +25,8 @@
     --course-blue-fg: 200 85% 25%;
     --course-green: 140 65% 75%;
     --course-green-fg: 140 85% 25%;
+    --course-orange: 25 95% 75%;
+    --course-orange-fg: 25 85% 25%;
 
     /* Card and UI elements */
     --card: 0 0% 100%;
@@ -56,6 +58,7 @@
     --gradient-yellow: linear-gradient(135deg, hsl(var(--course-yellow)), hsl(45 95% 65%));
     --gradient-blue: linear-gradient(135deg, hsl(var(--course-blue)), hsl(200 75% 65%));
     --gradient-green: linear-gradient(135deg, hsl(var(--course-green)), hsl(140 65% 65%));
+    --gradient-orange: linear-gradient(135deg, hsl(var(--course-orange)), hsl(25 95% 65%));
     
     /* Elegant shadows */
     --shadow-card: 0 1px 3px 0 hsl(220 13% 18% / 0.1), 0 1px 2px -1px hsl(220 13% 18% / 0.1);
@@ -97,6 +100,11 @@
   .course-card-green {
     background: var(--gradient-green);
     @apply text-course-green-fg;
+  }
+  
+  .course-card-orange {
+    background: var(--gradient-orange);
+    @apply text-course-orange-fg;
   }
 
   .card-shadow {

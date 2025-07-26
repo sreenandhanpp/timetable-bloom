@@ -15,8 +15,17 @@ import {
 
 export default function StaffDashboard() {
   const timeSlots = [
-    '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
-    '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
+    { label: 'QCPC', time: '8:50 AM - 9:05 AM', type: 'qcpc' },
+    { label: 'Period 1', time: '9:05 AM - 10:00 AM', type: 'class' },
+    { label: 'Period 2', time: '10:00 AM - 10:50 AM', type: 'class' },
+    { label: 'Break', time: '10:50 AM - 11:10 AM', type: 'break' },
+    { label: 'Period 3', time: '11:10 AM - 12:00 PM', type: 'class' },
+    { label: 'Period 4', time: '12:00 PM - 12:50 PM', type: 'class' },
+    { label: 'Lunch', time: '12:50 PM - 1:30 PM', type: 'lunch' },
+    { label: 'Period 5', time: '1:30 PM - 2:20 PM', type: 'class' },
+    { label: 'Period 6', time: '2:20 PM - 3:10 PM', type: 'class' },
+    { label: 'Period 7', time: '3:10 PM - 4:00 PM', type: 'class' },
+    { label: 'Period 8', time: '4:00 PM - 4:15 PM', type: 'class' }
   ];
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -24,28 +33,28 @@ export default function StaffDashboard() {
   // Sample staff timetable
   const staffTimetable = {
     'Monday': {
-      '9:00 AM': { subject: 'Data Structures', type: 'Lecture', year: '2', room: 'Room 101', students: 45 },
-      '11:00 AM': { subject: 'Programming Lab', type: 'Lab', year: '2', room: 'Lab 1', students: 22 },
-      '2:00 PM': { subject: 'Software Engineering', type: 'Lecture', year: '3', room: 'Room 104', students: 38 },
+      'Period 1': { subject: 'Data Structures', type: 'Lecture', semester: '3', room: 'Room 101', students: 45 },
+      'Period 3': { subject: 'Programming Lab', type: 'Lab', semester: '3', room: 'Lab 1', students: 22 },
+      'Period 5': { subject: 'Software Engineering', type: 'Lecture', semester: '5', room: 'Room 104', students: 38 },
     },
     'Tuesday': {
-      '10:00 AM': { subject: 'Algorithms', type: 'Lecture', year: '3', room: 'Room 101', students: 42 },
-      '2:00 PM': { subject: 'Database Lab', type: 'Lab', year: '2', room: 'Lab 3', students: 20 },
-      '3:00 PM': { subject: 'Data Structures', type: 'Lecture', year: '2', room: 'Room 102', students: 40 },
+      'Period 2': { subject: 'Algorithms', type: 'Lecture', semester: '5', room: 'Room 101', students: 42 },
+      'Period 5': { subject: 'Database Lab', type: 'Lab', semester: '3', room: 'Lab 3', students: 20 },
+      'Period 6': { subject: 'Data Structures', type: 'Lecture', semester: '3', room: 'Room 102', students: 40 },
     },
     'Wednesday': {
-      '9:00 AM': { subject: 'System Design', type: 'Lecture', year: '4', room: 'Room 104', students: 35 },
-      '11:00 AM': { subject: 'Programming Lab', type: 'Lab', year: '2', room: 'Lab 1', students: 24 },
-      '2:00 PM': { subject: 'Advanced Programming', type: 'Lecture', year: '3', room: 'Room 103', students: 30 },
+      'Period 1': { subject: 'System Design', type: 'Lecture', semester: '7', room: 'Room 104', students: 35 },
+      'Period 3': { subject: 'Programming Lab', type: 'Lab', semester: '3', room: 'Lab 1', students: 24 },
+      'Period 5': { subject: 'Advanced Programming', type: 'Lecture', semester: '5', room: 'Room 103', students: 30 },
     },
     'Thursday': {
-      '10:00 AM': { subject: 'Software Engineering', type: 'Lecture', year: '3', room: 'Room 101', students: 38 },
-      '11:00 AM': { subject: 'Project Lab', type: 'Lab', year: '4', room: 'Lab 2', students: 18 },
-      '3:00 PM': { subject: 'Data Structures', type: 'Lecture', year: '2', room: 'Room 105', students: 44 },
+      'Period 2': { subject: 'Software Engineering', type: 'Lecture', semester: '5', room: 'Room 101', students: 38 },
+      'Period 3': { subject: 'Project Lab', type: 'Lab', semester: '7', room: 'Lab 2', students: 18 },
+      'Period 6': { subject: 'Data Structures', type: 'Lecture', semester: '3', room: 'Room 105', students: 44 },
     },
     'Friday': {
-      '9:00 AM': { subject: 'Seminar', type: 'Lecture', year: '4', room: 'Auditorium', students: 60 },
-      '11:00 AM': { subject: 'Office Hours', type: 'Consultation', year: 'All', room: 'Office 201', students: 0 },
+      'Period 1': { subject: 'Seminar', type: 'Lecture', semester: '7', room: 'Auditorium', students: 60 },
+      'Period 3': { subject: 'Office Hours', type: 'Consultation', semester: 'All', room: 'Office 201', students: 0 },
     },
   };
 
@@ -58,9 +67,9 @@ export default function StaffDashboard() {
   };
 
   const upcomingClasses = [
-    { time: '9:00 AM', subject: 'Data Structures', room: 'Room 101', type: 'Lecture' },
-    { time: '11:00 AM', subject: 'Programming Lab', room: 'Lab 1', type: 'Lab' },
-    { time: '2:00 PM', subject: 'Software Engineering', room: 'Room 104', type: 'Lecture' },
+    { time: '9:05 AM - 10:00 AM', subject: 'Data Structures', room: 'Room 101', type: 'Lecture' },
+    { time: '11:10 AM - 12:00 PM', subject: 'Programming Lab', room: 'Lab 1', type: 'Lab' },
+    { time: '1:30 PM - 2:20 PM', subject: 'Software Engineering', room: 'Room 104', type: 'Lecture' },
   ];
 
   const weeklyStats = {
@@ -202,28 +211,59 @@ export default function StaffDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <div className="grid grid-cols-10 gap-2 min-w-[1000px]">
+                  <div className="grid gap-2 min-w-[800px]" style={{ gridTemplateColumns: `120px repeat(${timeSlots.length}, 1fr)` }}>
                     {/* Header row */}
                     <div className="font-semibold text-center p-2 bg-muted rounded-lg text-sm">
-                      Day
+                      Day / Time
                     </div>
-                    {timeSlots.map((time) => (
-                      <div key={time} className="font-semibold text-center p-2 bg-muted rounded-lg text-sm">
-                        {time}
+                    {timeSlots.map((slot) => (
+                      <div key={slot.label} className={`font-semibold text-center p-2 rounded-lg text-xs ${
+                        slot.type === 'qcpc' ? 'course-card-green' :
+                        slot.type === 'break' || slot.type === 'lunch' ? 'bg-orange-100 text-orange-800' :
+                        'bg-muted'
+                      }`}>
+                        <div>{slot.label}</div>
+                        <div className="text-xs opacity-80">{slot.time}</div>
                       </div>
                     ))}
 
                     {/* Days */}
                     {days.map((day) => (
                       <div key={day} className="contents">
-                        <div className="text-xs font-medium text-center p-2 bg-card border rounded-lg">
+                        <div className="text-xs font-medium text-center p-2 bg-card border rounded-lg flex items-center justify-center">
                           {day}
                         </div>
-                        {timeSlots.map((time) => {
-                          const classData = staffTimetable[day]?.[time];
+                        {timeSlots.map((slot) => {
+                          if (slot.type === 'break' || slot.type === 'lunch') {
+                            return (
+                              <div
+                                key={`${day}-${slot.label}`}
+                                className="p-2 rounded-lg text-xs bg-orange-50 border border-orange-200 flex items-center justify-center"
+                              >
+                                <div className="text-center text-orange-700 font-medium">
+                                  {slot.type === 'break' ? 'Break' : 'Lunch'}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (slot.type === 'qcpc') {
+                            return (
+                              <div
+                                key={`${day}-${slot.label}`}
+                                className="p-2 rounded-lg text-xs course-card-green flex items-center justify-center"
+                              >
+                                <div className="text-center font-medium">
+                                  QCPC
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          const classData = staffTimetable[day]?.[slot.label];
                           return (
                             <div
-                              key={`${day}-${time}`}
+                              key={`${day}-${slot.label}`}
                               className={`p-2 rounded-lg text-xs ${
                                 classData
                                   ? `${getSubjectStyle(classData.type)} font-medium`
@@ -233,7 +273,7 @@ export default function StaffDashboard() {
                               {classData ? (
                                 <div className="space-y-1">
                                   <div className="font-semibold">{classData.subject}</div>
-                                  <div className="opacity-80">Year {classData.year}</div>
+                                  <div className="opacity-80">Sem {classData.semester}</div>
                                   <div className="opacity-80">{classData.room}</div>
                                   {classData.students > 0 && (
                                     <div className="opacity-80">{classData.students} students</div>

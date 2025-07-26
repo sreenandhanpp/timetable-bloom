@@ -16,7 +16,7 @@ export default function AddSubjects() {
     faculty: '',
     periodsPerWeek: '',
     labName: '',
-    year: '',
+    semester: '',
     department: ''
   });
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ export default function AddSubjects() {
     'Information Technology'
   ];
 
-  const years = ['1', '2', '3', '4'];
+  const semesters = ['1', '2', '3', '4', '5', '6', '7', '8'];
   
   const subjectTypes = ['Lecture', 'Lab'];
   
@@ -62,7 +62,7 @@ export default function AddSubjects() {
     setTimeout(() => {
       toast({
         title: "Subject Added Successfully!",
-        description: `${formData.subjectName} has been added to Year ${formData.year} ${formData.department}.`,
+        description: `${formData.subjectName} has been added to Semester ${formData.semester} ${formData.department}.`,
       });
       
       // Reset form
@@ -72,7 +72,7 @@ export default function AddSubjects() {
         faculty: '',
         periodsPerWeek: '',
         labName: '',
-        year: '',
+        semester: '',
         department: ''
       });
       setLoading(false);
@@ -194,18 +194,18 @@ export default function AddSubjects() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="year">Academic Year *</Label>
+                      <Label htmlFor="semester">Semester *</Label>
                       <Select 
-                        value={formData.year} 
-                        onValueChange={(value) => handleInputChange('year', value)}
+                        value={formData.semester} 
+                        onValueChange={(value) => handleInputChange('semester', value)}
                       >
                         <SelectTrigger className="h-11">
-                          <SelectValue placeholder="Select year" />
+                          <SelectValue placeholder="Select semester" />
                         </SelectTrigger>
                         <SelectContent>
-                          {years.map((year) => (
-                            <SelectItem key={year} value={year}>
-                              Year {year}
+                          {semesters.map((semester) => (
+                            <SelectItem key={semester} value={semester}>
+                              Semester {semester}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -258,7 +258,7 @@ export default function AddSubjects() {
                     <Button 
                       type="submit" 
                       className="flex items-center space-x-2"
-                      disabled={loading || !formData.subjectName || !formData.subjectType || !formData.faculty || !formData.year || !formData.department || (isLabType && !formData.labName)}
+                      disabled={loading || !formData.subjectName || !formData.subjectType || !formData.faculty || !formData.semester || !formData.department || (isLabType && !formData.labName)}
                     >
                       {loading ? (
                         <>
@@ -282,7 +282,7 @@ export default function AddSubjects() {
                         faculty: '',
                         periodsPerWeek: '',
                         labName: '',
-                        year: '',
+                        semester: '',
                         department: ''
                       })}
                     >

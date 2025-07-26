@@ -69,6 +69,13 @@ export default function AdminDashboard() {
       path: '/admin/timetable',
       color: 'course-card-blue'
     },
+    { 
+      title: 'Configuration', 
+      description: 'Manage time slots and settings',
+      icon: BarChart3,
+      path: '/admin/configuration',
+      color: 'course-card-green'
+    },
   ];
 
   const recentActivity = [

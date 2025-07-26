@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Filter, Clock } from 'lucide-react';
 
 export default function PublicTimetable() {
-  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedSemester, setSelectedSemester] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
 
   const departments = [
@@ -18,11 +18,20 @@ export default function PublicTimetable() {
     'Information Technology'
   ];
 
-  const years = ['1', '2', '3', '4'];
+  const semesters = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
   const timeSlots = [
-    '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
-    '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
+    { label: 'QCPC', time: '8:50 AM - 9:05 AM', type: 'qcpc' },
+    { label: 'Period 1', time: '9:05 AM - 10:00 AM', type: 'class' },
+    { label: 'Period 2', time: '10:00 AM - 10:50 AM', type: 'class' },
+    { label: 'Break', time: '10:50 AM - 11:10 AM', type: 'break' },
+    { label: 'Period 3', time: '11:10 AM - 12:00 PM', type: 'class' },
+    { label: 'Period 4', time: '12:00 PM - 12:50 PM', type: 'class' },
+    { label: 'Lunch', time: '12:50 PM - 1:30 PM', type: 'lunch' },
+    { label: 'Period 5', time: '1:30 PM - 2:20 PM', type: 'class' },
+    { label: 'Period 6', time: '2:20 PM - 3:10 PM', type: 'class' },
+    { label: 'Period 7', time: '3:10 PM - 4:00 PM', type: 'class' },
+    { label: 'Period 8', time: '4:00 PM - 4:15 PM', type: 'class' }
   ];
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -30,15 +39,15 @@ export default function PublicTimetable() {
   // Sample timetable data
   const sampleTimetable = {
     'Monday': {
-      '9:00 AM': { subject: 'Data Structures', type: 'Lecture', faculty: 'Dr. Smith' },
-      '10:00 AM': { subject: 'Database Management', type: 'Lecture', faculty: 'Prof. Johnson' },
-      '11:00 AM': { subject: 'Programming Lab', type: 'Lab', faculty: 'Dr. Brown' },
-      '2:00 PM': { subject: 'Computer Networks', type: 'Lecture', faculty: 'Dr. Wilson' },
+      'Period 1': { subject: 'Data Structures', type: 'Lecture', faculty: 'Dr. Smith' },
+      'Period 2': { subject: 'Database Management', type: 'Lecture', faculty: 'Prof. Johnson' },
+      'Period 3': { subject: 'Programming Lab', type: 'Lab', faculty: 'Dr. Brown' },
+      'Period 5': { subject: 'Computer Networks', type: 'Lecture', faculty: 'Dr. Wilson' },
     },
     'Tuesday': {
-      '9:00 AM': { subject: 'Operating Systems', type: 'Lecture', faculty: 'Prof. Davis' },
-      '11:00 AM': { subject: 'Web Development', type: 'Lab', faculty: 'Dr. Taylor' },
-      '2:00 PM': { subject: 'Software Engineering', type: 'Lecture', faculty: 'Dr. Anderson' },
+      'Period 1': { subject: 'Operating Systems', type: 'Lecture', faculty: 'Prof. Davis' },
+      'Period 3': { subject: 'Web Development', type: 'Lab', faculty: 'Dr. Taylor' },
+      'Period 5': { subject: 'Software Engineering', type: 'Lecture', faculty: 'Dr. Anderson' },
     },
     // Add more days...
   };
@@ -48,7 +57,7 @@ export default function PublicTimetable() {
     return 'course-card-purple';
   };
 
-  const showTimetable = selectedYear && selectedDepartment;
+  const showTimetable = selectedSemester && selectedDepartment;
 
   return (
     <Layout>
@@ -75,21 +84,21 @@ export default function PublicTimetable() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Academic Year</label>
-                <Select value={selectedYear} onValueChange={setSelectedYear}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year}>
-                        Year {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Semester</label>
+              <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select semester" />
+                </SelectTrigger>
+                <SelectContent>
+                  {semesters.map((semester) => (
+                    <SelectItem key={semester} value={semester}>
+                      Semester {semester}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Department</label>
@@ -110,7 +119,7 @@ export default function PublicTimetable() {
               <div className="flex items-end">
                 <Button 
                   className="w-full"
-                  disabled={!selectedYear || !selectedDepartment}
+                  disabled={!selectedSemester || !selectedDepartment}
                 >
                   View Timetable
                 </Button>
@@ -126,7 +135,7 @@ export default function PublicTimetable() {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Clock className="w-5 h-5" />
-                  <span>Year {selectedYear} - {selectedDepartment}</span>
+                  <span>Semester {selectedSemester} - {selectedDepartment}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="course-card-purple">Lecture</Badge>
@@ -136,28 +145,59 @@ export default function PublicTimetable() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <div className="grid grid-cols-10 gap-2 min-w-[1200px]">
+                <div className="grid gap-2 min-w-[800px]" style={{ gridTemplateColumns: `120px repeat(${timeSlots.length}, 1fr)` }}>
                   {/* Header row */}
                   <div className="font-semibold text-center p-3 bg-muted rounded-lg">
-                    Day
+                    Day / Time
                   </div>
-                  {timeSlots.map((time) => (
-                    <div key={time} className="font-semibold text-center p-3 bg-muted rounded-lg">
-                      {time}
+                  {timeSlots.map((slot) => (
+                    <div key={slot.label} className={`font-semibold text-center p-2 rounded-lg text-xs ${
+                      slot.type === 'qcpc' ? 'course-card-green' :
+                      slot.type === 'break' || slot.type === 'lunch' ? 'bg-orange-100 text-orange-800' :
+                      'bg-muted'
+                    }`}>
+                      <div>{slot.label}</div>
+                      <div className="text-xs opacity-80">{slot.time}</div>
                     </div>
                   ))}
 
                   {/* Days */}
                   {days.map((day) => (
                     <div key={day} className="contents">
-                      <div className="text-sm font-medium text-center p-3 bg-card border rounded-lg">
+                      <div className="text-sm font-medium text-center p-3 bg-card border rounded-lg flex items-center justify-center">
                         {day}
                       </div>
-                      {timeSlots.map((time) => {
-                        const classData = sampleTimetable[day]?.[time];
+                      {timeSlots.map((slot) => {
+                        if (slot.type === 'break' || slot.type === 'lunch') {
+                          return (
+                            <div
+                              key={`${day}-${slot.label}`}
+                              className="p-3 rounded-lg text-sm bg-orange-50 border border-orange-200 flex items-center justify-center"
+                            >
+                              <div className="text-center text-orange-700 font-medium">
+                                {slot.type === 'break' ? 'Break' : 'Lunch'}
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        if (slot.type === 'qcpc') {
+                          return (
+                            <div
+                              key={`${day}-${slot.label}`}
+                              className="p-3 rounded-lg text-sm course-card-green flex items-center justify-center"
+                            >
+                              <div className="text-center font-medium">
+                                QCPC
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        const classData = sampleTimetable[day]?.[slot.label];
                         return (
                           <div
-                            key={`${day}-${time}`}
+                            key={`${day}-${slot.label}`}
                             className={`p-3 rounded-lg text-sm ${
                               classData
                                 ? `${getSubjectStyle(classData.type)} font-medium`
@@ -166,7 +206,7 @@ export default function PublicTimetable() {
                           >
                             {classData ? (
                               <div className="space-y-1">
-                                <div className="font-semibold">{classData.subject}</div>
+                                <div className="font-semibold text-xs">{classData.subject}</div>
                                 <div className="text-xs opacity-80">{classData.faculty}</div>
                                 <Badge 
                                   variant="secondary" 
@@ -176,7 +216,7 @@ export default function PublicTimetable() {
                                 </Badge>
                               </div>
                             ) : (
-                              <div className="text-center text-muted-foreground">
+                              <div className="text-center text-muted-foreground text-xs">
                                 Free
                               </div>
                             )}
@@ -196,7 +236,7 @@ export default function PublicTimetable() {
                 <Calendar className="w-16 h-16 text-muted-foreground mx-auto" />
                 <h3 className="text-lg font-semibold">Select Filters to View Timetable</h3>
                 <p className="text-muted-foreground">
-                  Choose your academic year and department to display the class schedule.
+                  Choose your semester and department to display the class schedule.
                 </p>
               </div>
             </CardContent>
