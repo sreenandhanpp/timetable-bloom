@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,12 +13,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { BookOpen, Plus, Save, ArrowLeft, Beaker } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createSubject } from "@/api/subject.api";
+import { BookOpen, Save, ArrowLeft, Beaker } from "lucide-react";
 import { getStaffList } from "@/api/staff.api";
+import { getSubjectById, updateSubject } from "@/api/subject.api";
 
-export default function AddSubjects() {
+export default function EditSubject() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const [formData, setFormData] = useState({
     subjectName: "",
     subjectType: "",
@@ -29,23 +33,10 @@ export default function AddSubjects() {
     subjectCode: "",
   });
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
-
   const [staffList, setStaffList] = useState<{ _id: string; name: string }[]>(
     []
   );
-
-  useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const data = await getStaffList();
-        setStaffList(data); // assuming API returns [{_id, name}]
-      } catch (error) {
-        console.error("Error fetching staff list", error);
-      }
-    };
-    fetchStaff();
-  }, []);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const departments = [
     "Computer Science",
@@ -56,18 +47,7 @@ export default function AddSubjects() {
   ];
 
   const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
-
   const subjectTypes = ["Lecture", "Lab"];
-
-  const facultyMembers = [
-    "Dr. Sarah Johnson",
-    "Prof. Michael Brown",
-    "Dr. Emily Davis",
-    "Prof. Robert Wilson",
-    "Dr. Lisa Anderson",
-    "Prof. David Taylor",
-  ];
-
   const labNames = [
     "Computer Lab 1",
     "Computer Lab 2",
@@ -79,40 +59,71 @@ export default function AddSubjects() {
     "Programming Lab",
   ];
 
+  // Fetch subject and staff list
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [staffData, subjectData] = await Promise.all([
+          getStaffList(),
+          getSubjectById(id as string),
+        ]);
+
+        setStaffList(staffData);
+        setFormData({
+          subjectName: subjectData.subjectName,
+          subjectType: subjectData.subjectType,
+          faculty: subjectData.faculty?._id || "",
+          periodsPerWeek: String(subjectData.periodsPerWeek),
+          labName: subjectData.labName || "",
+          semester: String(subjectData.semester),
+          department: subjectData.department,
+          subjectCode: subjectData.subjectCode,
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load subject details",
+          variant: "destructive",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id, toast]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const isLabType = formData.subjectType === "Lab";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await createSubject({
+      await updateSubject(id as string, {
         subjectName: formData.subjectName,
         subjectCode: formData.subjectCode,
         subjectType: formData.subjectType,
-        faculty: formData.faculty, // <-- This will now be the staff ID
+        faculty: formData.faculty,
         periodsPerWeek: Number(formData.periodsPerWeek),
-        labName: formData.subjectType === "Lab" ? formData.labName : undefined,
-        semester: formData.semester,
+        labName: isLabType ? formData.labName : undefined,
+        semester: String(formData.semester),
         department: formData.department,
       });
 
       toast({
-        title: "Subject Added Successfully!",
-        description: `${formData.subjectName} has been added to Semester ${formData.semester} ${formData.department}.`,
+        title: "Subject Updated Successfully!",
+        description: `${formData.subjectName} has been updated.`,
       });
 
-      setFormData({
-        subjectName: "",
-        subjectType: "",
-        faculty: "",
-        periodsPerWeek: "",
-        labName: "",
-        semester: "",
-        department: "",
-        subjectCode: "",
-      });
+      navigate("/admin/subjects");
     } catch (error: any) {
       toast({
-        title: "Error Adding Subject",
+        title: "Error Updating Subject",
         description: error?.response?.data?.message || "Something went wrong!",
         variant: "destructive",
       });
@@ -121,11 +132,15 @@ export default function AddSubjects() {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const isLabType = formData.subjectType === "Lab";
+  if (initialLoading) {
+    return (
+      <Layout userType="admin" userName="Administrator">
+        <div className="flex justify-center py-20">
+          <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout userType="admin" userName="Administrator">
@@ -134,15 +149,15 @@ export default function AddSubjects() {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <Link to="/admin">
+              <Link to="/admin/subjects">
                 <Button variant="ghost" size="icon">
                   <ArrowLeft className="w-5 h-5" />
                 </Button>
               </Link>
-              <h1 className="text-3xl font-bold">Add Subject</h1>
+              <h1 className="text-3xl font-bold">Edit Subject</h1>
             </div>
             <p className="text-muted-foreground">
-              Create new courses and lab sessions for your curriculum
+              Update subject or lab details
             </p>
           </div>
           <div className="course-card-yellow p-3 rounded-xl">
@@ -156,7 +171,7 @@ export default function AddSubjects() {
             <Card className="card-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Plus className="w-5 h-5" />
+                  <BookOpen className="w-5 h-5" />
                   <span>Subject Details</span>
                 </CardTitle>
               </CardHeader>
@@ -167,7 +182,7 @@ export default function AddSubjects() {
                       <Label htmlFor="subjectName">Subject Name *</Label>
                       <Input
                         id="subjectName"
-                        placeholder="e.g., Data Structures and Algorithms"
+                        placeholder="e.g., Data Structures"
                         value={formData.subjectName}
                         onChange={(e) =>
                           handleInputChange("subjectName", e.target.value)
@@ -341,12 +356,12 @@ export default function AddSubjects() {
                       {loading ? (
                         <>
                           <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                          <span>Adding Subject...</span>
+                          <span>Updating Subject...</span>
                         </>
                       ) : (
                         <>
                           <Save className="w-4 h-4" />
-                          <span>Save Subject</span>
+                          <span>Update Subject</span>
                         </>
                       )}
                     </Button>
@@ -354,20 +369,9 @@ export default function AddSubjects() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() =>
-                        setFormData({
-                          subjectName: "",
-                          subjectType: "",
-                          faculty: "",
-                          periodsPerWeek: "",
-                          labName: "",
-                          semester: "",
-                          department: "",
-                          subjectCode: "",
-                        })
-                      }
+                      onClick={() => navigate("/admin/subjects")}
                     >
-                      Clear Form
+                      Cancel
                     </Button>
                   </div>
                 </form>
@@ -416,8 +420,8 @@ export default function AddSubjects() {
                 <BookOpen className="w-12 h-12 mx-auto mb-3" />
                 <h3 className="font-semibold mb-2">Curriculum Management</h3>
                 <p className="text-sm opacity-90">
-                  Build comprehensive academic programs with proper subject
-                  allocation.
+                  Keep your curriculum updated and accurate with the latest
+                  subject details.
                 </p>
               </CardContent>
             </Card>

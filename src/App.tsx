@@ -13,6 +13,10 @@ import AddSubjects from "./pages/AddSubjects";
 import GenerateTimetable from "./pages/GenerateTimetable";
 import Configuration from "./pages/Configuration";
 import NotFound from "./pages/NotFound";
+import StaffList from "./pages/StaffList";
+import EditStaff from "./pages/EditStaff";
+import SubjectList from "./pages/SubjectList";
+import EditSubject from "./pages/EditSubject";
 
 const queryClient = new QueryClient();
 
@@ -27,8 +31,12 @@ const App = () => (
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/staff/login" element={<StaffLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/staff" element={<AddStaff />} />
-          <Route path="/admin/subjects" element={<AddSubjects />} />
+          <Route path="/admin/staff" element={<StaffList />} />
+          <Route path="/admin/staff/add" element={<AddStaff />} />
+          <Route path="/admin/staff/edit/:id" element={<EditStaff />} />
+          <Route path="/admin/subjects" element={<SubjectList />} />
+          <Route path="/admin/subjects/add" element={<AddSubjects />} />
+          <Route path="/admin/subjects/edit/:id" element={<EditSubject />} />
           <Route path="/admin/timetable" element={<GenerateTimetable />} />
           <Route path="/admin/configuration" element={<Configuration />} />
           <Route path="/staff" element={<StaffDashboard />} />

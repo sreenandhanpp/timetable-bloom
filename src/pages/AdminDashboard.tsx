@@ -1,88 +1,104 @@
-import { Layout } from '@/components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Users, 
-  BookOpen, 
-  Calendar, 
-  BarChart3, 
+import { Layout } from "@/components/Layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Users,
+  BookOpen,
+  Calendar,
+  BarChart3,
   Plus,
   Clock,
   TrendingUp,
-  AlertCircle
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+  AlertCircle,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
   const stats = [
-    { 
-      label: 'Total Staff', 
-      value: '45', 
-      icon: Users, 
-      color: 'course-card-purple',
-      change: '+5 this month'
+    {
+      label: "Total Staff",
+      value: "45",
+      icon: Users,
+      color: "course-card-purple",
+      change: "+5 this month",
     },
-    { 
-      label: 'Active Subjects', 
-      value: '128', 
-      icon: BookOpen, 
-      color: 'course-card-yellow',
-      change: '+12 this semester'
+    {
+      label: "Active Subjects",
+      value: "128",
+      icon: BookOpen,
+      color: "course-card-yellow",
+      change: "+12 this semester",
     },
-    { 
-      label: 'Classes Scheduled', 
-      value: '340', 
-      icon: Calendar, 
-      color: 'course-card-blue',
-      change: '95% utilization'
+    {
+      label: "Classes Scheduled",
+      value: "340",
+      icon: Calendar,
+      color: "course-card-blue",
+      change: "95% utilization",
     },
-    { 
-      label: 'Departments', 
-      value: '5', 
-      icon: BarChart3, 
-      color: 'course-card-green',
-      change: 'All active'
+    {
+      label: "Departments",
+      value: "5",
+      icon: BarChart3,
+      color: "course-card-green",
+      change: "All active",
     },
   ];
 
   const quickActions = [
-    { 
-      title: 'Add Staff Member', 
-      description: 'Register new faculty and teaching staff',
+    {
+      title: "Add Staff Member",
+      description: "Register new faculty and teaching staff",
       icon: Users,
-      path: '/admin/staff',
-      color: 'course-card-purple'
+      path: "/admin/staff/add",
+      color: "course-card-purple",
     },
-    { 
-      title: 'Add Subjects', 
-      description: 'Create new courses and lab sessions',
+    {
+      title: "Add Subjects",
+      description: "Create new courses and lab sessions",
       icon: BookOpen,
-      path: '/admin/subjects',
-      color: 'course-card-yellow'
+      path: "/admin/subjects/add",
+      color: "course-card-yellow",
     },
-    { 
-      title: 'Generate Timetable', 
-      description: 'Create optimized class schedules',
+    {
+      title: "Generate Timetable",
+      description: "Create optimized class schedules",
       icon: Calendar,
-      path: '/admin/timetable',
-      color: 'course-card-blue'
+      path: "/admin/timetable",
+      color: "course-card-blue",
     },
-    { 
-      title: 'Configuration', 
-      description: 'Manage time slots and settings',
+    {
+      title: "Configuration",
+      description: "Manage time slots and settings",
       icon: BarChart3,
-      path: '/admin/configuration',
-      color: 'course-card-green'
+      path: "/admin/configuration",
+      color: "course-card-green",
     },
   ];
 
   const recentActivity = [
-    { action: 'New staff member added', details: 'Dr. Sarah Johnson - Computer Science', time: '2 hours ago' },
-    { action: 'Timetable generated', details: 'Year 3 - Electronics Department', time: '4 hours ago' },
-    { action: 'Subject updated', details: 'Machine Learning Lab - Schedule changed', time: '1 day ago' },
-    { action: 'Staff profile updated', details: 'Prof. Michael Brown - Contact info', time: '2 days ago' },
+    {
+      action: "New staff member added",
+      details: "Dr. Sarah Johnson - Computer Science",
+      time: "2 hours ago",
+    },
+    {
+      action: "Timetable generated",
+      details: "Year 3 - Electronics Department",
+      time: "4 hours ago",
+    },
+    {
+      action: "Subject updated",
+      details: "Machine Learning Lab - Schedule changed",
+      time: "1 day ago",
+    },
+    {
+      action: "Staff profile updated",
+      details: "Prof. Michael Brown - Contact info",
+      time: "2 days ago",
+    },
   ];
 
   return (
@@ -92,7 +108,8 @@ export default function AdminDashboard() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Welcome back, Administrator</h1>
           <p className="text-muted-foreground">
-            Manage your institution's timetables, staff, and academic schedules from your dashboard.
+            Manage your institution's timetables, staff, and academic schedules
+            from your dashboard.
           </p>
         </div>
 
@@ -129,7 +146,7 @@ export default function AdminDashboard() {
                 <span>Quick Actions</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="flex flex-col gap-y-4">
               {quickActions.map((action, index) => (
                 <Link key={index} to={action.path}>
                   <div className="flex items-center space-x-4 p-4 rounded-lg border hover:bg-accent transition-colors cursor-pointer">
@@ -158,7 +175,10 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start space-x-3 p-3 rounded-lg bg-muted/50">
+                <div
+                  key={index}
+                  className="flex items-start space-x-3 p-3 rounded-lg bg-muted/50"
+                >
                   <div className="w-2 h-2 rounded-full bg-primary mt-3 flex-shrink-0"></div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium">{activity.action}</p>
@@ -195,15 +215,17 @@ export default function AdminDashboard() {
                 </div>
                 <Progress value={78} className="h-2" />
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Timetable Completion</span>
+                  <span className="text-sm font-medium">
+                    Timetable Completion
+                  </span>
                   <span className="text-sm text-muted-foreground">92%</span>
                 </div>
                 <Progress value={92} className="h-2" />
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Staff Allocation</span>
@@ -212,14 +234,15 @@ export default function AdminDashboard() {
                 <Progress value={95} className="h-2" />
               </div>
             </div>
-            
+
             <div className="mt-6 p-4 bg-muted rounded-lg">
               <div className="flex items-center space-x-2">
                 <AlertCircle className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">System Notice</span>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                Semester change is scheduled for next week. Please ensure all timetables are finalized.
+                Semester change is scheduled for next week. Please ensure all
+                timetables are finalized.
               </p>
             </div>
           </CardContent>

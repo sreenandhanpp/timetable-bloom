@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
+import { adminLogin } from '@/api/auth.api'; // ✅ import API
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -20,23 +21,24 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate authentication
-    setTimeout(() => {
-      if (email === 'admin@edu.com' && password === 'admin123') {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back, Administrator!",
-        });
-        navigate('/admin');
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid email or password",
-          variant: "destructive",
-        });
-      }
+    try {
+      const response = await adminLogin({ email, password });
+
+      toast({
+        title: "Login Successful",
+        description: `Welcome back, ${response?.admin?.name || "Administrator"}!`,
+      });
+
+      navigate('/admin');
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error?.response?.data?.message || "Invalid email or password",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -121,12 +123,6 @@ export default function AdminLogin() {
               <Button variant="link" className="text-primary">
                 Forgot your password?
               </Button>
-            </div>
-
-            <div className="text-center text-sm text-muted-foreground bg-muted p-3 rounded-lg">
-              <strong>Demo Credentials:</strong><br />
-              Email: admin@edu.com<br />
-              Password: admin123
             </div>
           </CardContent>
         </Card>

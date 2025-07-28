@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,11 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Plus, Save, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { createStaff } from '@/api/staff.api';
+import { Users, Save, ArrowLeft } from 'lucide-react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { getStaffDetails, updateStaff } from '@/api/staff.api';
 
-export default function AddStaff() {
+export default function EditStaff() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     department: '',
@@ -19,6 +21,7 @@ export default function AddStaff() {
     designation: ''
   });
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const { toast } = useToast();
 
   const departments = [
@@ -41,30 +44,48 @@ export default function AddStaff() {
     'Visiting Faculty'
   ];
 
+  // Fetch staff details on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getStaffDetails(id!);
+        setFormData({
+          name: data.name,
+          department: data.department,
+          email: data.email,
+          phone: data.phone || '',
+          designation: data.designation
+        });
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch staff details.',
+          variant: 'destructive'
+        });
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchData();
+  }, [id, toast]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await createStaff(formData);
+      await updateStaff(id!, formData);
 
       toast({
-        title: "Staff Member Added Successfully!",
-        description: `${formData.name} has been added to the ${formData.department} department.`,
+        title: "Staff Member Updated Successfully!",
+        description: `${formData.name}'s details have been updated.`,
       });
 
-      // Reset form
-      setFormData({
-        name: '',
-        department: '',
-        email: '',
-        phone: '',
-        designation: ''
-      });
+      navigate('/admin/staff');
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error?.response?.data?.message || "Failed to add staff member.",
+        description: error?.response?.data?.message || "Failed to update staff member.",
         variant: "destructive",
       });
     } finally {
@@ -76,6 +97,16 @@ export default function AddStaff() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  if (fetching) {
+    return (
+      <Layout userType="admin" userName="Administrator">
+        <div className="flex justify-center items-center h-64">
+          <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout userType="admin" userName="Administrator">
       <div className="space-y-6">
@@ -83,15 +114,15 @@ export default function AddStaff() {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <Link to="/admin">
+              <Link to="/admin/staff">
                 <Button variant="ghost" size="icon">
                   <ArrowLeft className="w-5 h-5" />
                 </Button>
               </Link>
-              <h1 className="text-3xl font-bold">Add Staff Member</h1>
+              <h1 className="text-3xl font-bold">Edit Staff Member</h1>
             </div>
             <p className="text-muted-foreground">
-              Register new faculty and teaching staff to the system
+              Update faculty and teaching staff information
             </p>
           </div>
           <div className="course-card-purple p-3 rounded-xl">
@@ -105,7 +136,6 @@ export default function AddStaff() {
             <Card className="card-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Plus className="w-5 h-5" />
                   <span>Staff Information</span>
                 </CardTitle>
               </CardHeader>
@@ -197,12 +227,12 @@ export default function AddStaff() {
                       {loading ? (
                         <>
                           <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                          <span>Adding Staff...</span>
+                          <span>Updating Staff...</span>
                         </>
                       ) : (
                         <>
                           <Save className="w-4 h-4" />
-                          <span>Add Staff Member</span>
+                          <span>Update Staff Member</span>
                         </>
                       )}
                     </Button>
@@ -210,15 +240,9 @@ export default function AddStaff() {
                     <Button 
                       type="button" 
                       variant="outline"
-                      onClick={() => setFormData({
-                        name: '',
-                        department: '',
-                        email: '',
-                        phone: '',
-                        designation: ''
-                      })}
+                      onClick={() => navigate('/admin/staff')}
                     >
-                      Clear Form
+                      Cancel
                     </Button>
                   </div>
                 </form>
@@ -234,22 +258,11 @@ export default function AddStaff() {
               </CardHeader>
               <CardContent className="space-y-4 text-sm">
                 <div className="space-y-2">
-                  <h4 className="font-semibold">Required Information</h4>
+                  <h4 className="font-semibold">Update Information Carefully</h4>
                   <ul className="space-y-1 text-muted-foreground">
-                    <li>• Full name of the faculty member</li>
-                    <li>• Valid institutional email address</li>
-                    <li>• Department assignment</li>
-                    <li>• Professional designation</li>
-                  </ul>
-                </div>
-                
-                <div className="space-y-2">
-                  <h4 className="font-semibold">Best Practices</h4>
-                  <ul className="space-y-1 text-muted-foreground">
-                    <li>• Use official titles (Dr., Prof.)</li>
-                    <li>• Ensure email is accessible</li>
-                    <li>• Verify department spelling</li>
-                    <li>• Include contact information</li>
+                    <li>• Ensure the email address is correct</li>
+                    <li>• Verify department and designation</li>
+                    <li>• Double-check contact information</li>
                   </ul>
                 </div>
               </CardContent>
@@ -260,7 +273,7 @@ export default function AddStaff() {
                 <Users className="w-12 h-12 mx-auto mb-3" />
                 <h3 className="font-semibold mb-2">Staff Management</h3>
                 <p className="text-sm opacity-90">
-                  Efficiently manage your institution's teaching staff and faculty members.
+                  Update your institution's teaching staff details here.
                 </p>
               </CardContent>
             </Card>
