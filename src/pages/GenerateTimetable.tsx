@@ -130,7 +130,7 @@ export default function GenerateTimetable() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Semester</label>
                 <Select value={selectedSemester} onValueChange={setSelectedSemester}>
@@ -177,26 +177,26 @@ export default function GenerateTimetable() {
                   </span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex space-x-2">
-                <Button 
-                  onClick={handleGenerate}
-                  disabled={!canGenerate || generating}
-                  className="flex items-center space-x-2 h-11"
-                >
-                  {generating ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      <span>Generating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4" />
-                      <span>Generate My Timetable</span>
-                    </>
-                  )}
-                </Button>
-              </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-between mt-6">
+              <Button 
+                onClick={handleGenerate}
+                disabled={!canGenerate || generating}
+                className="flex items-center space-x-2 h-11"
+              >
+                {generating ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4" />
+                    <span>Generate My Timetable</span>
+                  </>
+                )}
+              </Button>
 
               {timetableGenerated && (
                 <div className="flex space-x-2">
