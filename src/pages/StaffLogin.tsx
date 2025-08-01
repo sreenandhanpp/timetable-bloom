@@ -123,11 +123,6 @@ export default function StaffLogin() {
               </Button>
             </div>
 
-            <div className="text-center text-sm text-muted-foreground bg-muted p-3 rounded-lg">
-              <strong>Demo Credentials:</strong><br />
-              Email: staff@edu.com<br />
-              Password: staff123
-            </div>
           </CardContent>
         </Card>
       </div>
