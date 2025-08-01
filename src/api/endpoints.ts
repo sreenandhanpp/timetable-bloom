@@ -20,4 +20,12 @@ export const ENDPOINTS = {
     update: (id: string) => `/subjects/${id}`, // PUT/PATCH: Update subject
     delete: (id: string) => `/subjects/${id}`, // DELETE: Remove subject
   },
+   configuration: {
+    create: "/config", // POST: Add new configuration
+    list: "/config", // GET: Fetch all configurations
+    details: (id: string) => `/config/${id}`, // GET: Get one configuration
+    update: (id: string) => `/config/${id}`, // PUT/PATCH: Update configuration
+    delete: (id: string) => `/config/${id}`, // DELETE: Remove configuration
+  },
+
 };
