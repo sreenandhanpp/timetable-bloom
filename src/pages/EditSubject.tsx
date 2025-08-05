@@ -57,6 +57,11 @@ export default function EditSubject() {
     "Digital Systems Lab",
     "Network Lab",
     "Programming Lab",
+    "Digital Lab",
+    "Mini Project",
+    "Network Lab",
+    "Operating Systems Lab",
+    "Major Project"
   ];
 
   // Fetch subject and staff list

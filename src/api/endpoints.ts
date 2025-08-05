@@ -27,5 +27,11 @@ export const ENDPOINTS = {
     update: (id: string) => `/config/${id}`, // PUT/PATCH: Update configuration
     delete: (id: string) => `/config/${id}`, // DELETE: Remove configuration
   },
+  timetable: {
+  generate: "/timetable/generate",             // POST: Generate a timetable
+  list: "/timetable",                          // GET: List all timetables
+  bySemester: (semester: number, dept: string) => `/timetable/${semester}/${dept}`, // GET: Get one timetable
+  delete: (semester: number, dept: string) => `/timetable/${semester}/${dept}`,     // DELETE: Remove timetable
+}
 
 };
