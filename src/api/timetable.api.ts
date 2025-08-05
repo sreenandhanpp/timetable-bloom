@@ -5,7 +5,7 @@ import { ENDPOINTS } from "./endpoints";
 
 // Payload structure for timetable generation
 export interface GenerateTimetablePayload {
-  semester: number;
+  type: string;
   department: string;
 }
 
