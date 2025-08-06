@@ -21,37 +21,45 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { generateTimetable as generateTimetableAPI } from "@/api/timetable.api"; // <-- import API
+import { generateTimetable as generateTimetableAPI } from "@/api/timetable.api";
 
-function formatTimetableData(rawData) {
-  const timetable = {};
+type TimeSlot = {
+  label: string;
+  start: string;
+  end: string;
+  type?: string;
+};
 
-  rawData.forEach((entry) => {
-    const { day, timeSlot, subject, type, room, faculty } = entry;
+type TimetableEntry = {
+  day: string;
+  timeSlot: { start: string; end: string };
+  subject?: string;
+  type?: string;
+  room?: string;
+  faculty?: string;
+  _id?: string;
+};
 
-    if (!timetable[day]) timetable[day] = {};
-
-    const slotLabel = `${timeSlot.start} - ${timeSlot.end}`;
-    timetable[day][slotLabel] = {
-      subject: subject || null,
-      type: type || null,
-      room: room || null,
-      faculty: faculty || null,
-    };
-  });
-
-  return timetable;
-}
+type SemesterBlock = {
+  semester: number | string;
+  department: string;
+  entries: TimetableEntry[];
+  timeSlots?: TimeSlot[];
+  isActive?: boolean;
+  _id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+};
 
 export default function GenerateTimetable() {
-  const [selectedSemester, setSelectedSemester] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [includeQCPC, setIncludeQCPC] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [timetableGenerated, setTimetableGenerated] = useState(false);
-  const [timeSlots, setTimeSlots] = useState([]);
-  const [timetableData, setTimetableData] = useState({});
   const [semesterType, setSemesterType] = useState<"odd" | "even" | "">("");
+  const [semesterData, setSemesterData] = useState<SemesterBlock[]>([]);
+  const [selectedSemester, setSelectedSemester] = useState("");
   const { toast } = useToast();
 
   const departments = [
@@ -62,9 +70,8 @@ export default function GenerateTimetable() {
     "Information Technology",
   ];
 
-  const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
-
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
   const handleGenerate = async () => {
     if (!semesterType || !selectedDepartment) return;
     setGenerating(true);
@@ -76,21 +83,25 @@ export default function GenerateTimetable() {
       };
 
       const data = await generateTimetableAPI(payload);
+      console.log("Generated Timetable Data:", data);
+      setSemesterData(data);
 
-      // Convert backend format → frontend grid format
-      const formattedData = formatTimetableData(data.timetableEntries);
-      setTimetableData(formattedData);
-
-      // Optional: also set timeSlots from API if returned
-      setTimeSlots(data.timeSlots || []);
-
-      setTimetableGenerated(true);
-
-      toast({
-        title: "Timetable Generated Successfully!",
-        description: `Generated optimized schedule for ${semesterType} semester - ${selectedDepartment}`,
-      });
+      if (data.length > 0) {
+        setSelectedSemester(String(data[0].semester));
+        setTimetableGenerated(true);
+        toast({
+          title: "Timetable Generated Successfully!",
+          description: `Generated schedules for ${data.length} semesters`,
+        });
+      } else {
+        toast({
+          title: "No timetable data found",
+          description: "Please try different parameters",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.error(error);
       toast({
         title: "Failed to generate timetable",
         description: "Please try again later",
@@ -101,12 +112,37 @@ export default function GenerateTimetable() {
     }
   };
 
-  const getSubjectStyle = (type: string) => {
-    if (type?.toLowerCase() === "lab") return "course-card-blue";
-    return "course-card-purple";
+  const getCurrentSemesterData = () => {
+    return semesterData.find((sem) => String(sem.semester) === selectedSemester);
   };
 
-const canGenerate = semesterType && selectedDepartment;
+  const getTimeSlots = () => {
+    const currentSemester = getCurrentSemesterData();
+    return currentSemester?.timeSlots || [];
+  };
+
+  const getEntriesForDayAndSlot = (day: string, timeSlot: TimeSlot) => {
+    const currentSemester = getCurrentSemesterData();
+    if (!currentSemester?.entries) return null;
+    
+    return currentSemester.entries.find(
+      (entry) => 
+        entry.day === day && 
+        entry.timeSlot.start === timeSlot.start && 
+        entry.timeSlot.end === timeSlot.end
+    );
+  };
+
+  const getSubjectStyle = (type?: string) => {
+    if (!type) return "bg-gray-100";
+    if (type.toLowerCase() === "lab") return "bg-blue-100 border-blue-200";
+    if (type.toLowerCase() === "lecture") return "bg-purple-100 border-purple-200";
+    if (type === "qcpc") return "bg-green-100 border-green-200";
+    if (type === "lunch" || type === "break") return "bg-orange-100 border-orange-200";
+    return "bg-gray-100";
+  };
+
+  const canGenerate = semesterType && selectedDepartment;
 
   return (
     <Layout userType="admin" userName="Administrator">
@@ -126,13 +162,13 @@ const canGenerate = semesterType && selectedDepartment;
               Create optimized class schedules with intelligent automation
             </p>
           </div>
-          <div className="course-card-blue p-3 rounded-xl">
+          <div className="bg-blue-100 p-3 rounded-xl">
             <Calendar className="w-8 h-8" />
           </div>
         </div>
 
-        {/* Form */}
-        <Card className="card-shadow">
+        {/* Config Form */}
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Settings className="w-5 h-5" />
@@ -141,14 +177,12 @@ const canGenerate = semesterType && selectedDepartment;
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-              {/* Semester */}
+              {/* Semester Type */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Semester Type</label>
                 <Select
                   value={semesterType}
-                  onValueChange={(value) =>
-                    setSemesterType(value as "odd" | "even")
-                  }
+                  onValueChange={(value) => setSemesterType(value as "odd" | "even")}
                 >
                   <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select semester type" />
@@ -163,10 +197,7 @@ const canGenerate = semesterType && selectedDepartment;
               {/* Department */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Department</label>
-                <Select
-                  value={selectedDepartment}
-                  onValueChange={setSelectedDepartment}
-                >
+                <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
                   <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
@@ -182,18 +213,11 @@ const canGenerate = semesterType && selectedDepartment;
 
               {/* QCPC Toggle */}
               <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center space-x-2">
-                  <span>Include QCPC in Timetable</span>
-                </label>
+                <label className="text-sm font-medium">Include QCPC in Timetable</label>
                 <div className="flex items-center space-x-2 h-11">
-                  <Switch
-                    checked={includeQCPC}
-                    onCheckedChange={setIncludeQCPC}
-                  />
+                  <Switch checked={includeQCPC} onCheckedChange={setIncludeQCPC} />
                   <span className="text-sm text-muted-foreground">
-                    {includeQCPC
-                      ? "QCPC slot will be included"
-                      : "QCPC slot excluded"}
+                    {includeQCPC ? "QCPC slot will be included" : "QCPC slot excluded"}
                   </span>
                 </div>
               </div>
@@ -221,11 +245,7 @@ const canGenerate = semesterType && selectedDepartment;
 
               {timetableGenerated && (
                 <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    className="h-11"
-                    onClick={handleGenerate}
-                  >
+                  <Button variant="outline" className="h-11" onClick={handleGenerate}>
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Regenerate
                   </Button>
@@ -239,141 +259,154 @@ const canGenerate = semesterType && selectedDepartment;
           </CardContent>
         </Card>
 
-        {/* Timetable */}
+        {/* Semester Selector */}
+        {timetableGenerated && semesterData.length > 0 && (
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium">View Semester</label>
+            <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Select Semester" />
+              </SelectTrigger>
+              <SelectContent>
+                {semesterData.map((sem) => (
+                  <SelectItem key={sem._id} value={String(sem.semester)}>
+                    Semester {sem.semester}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {/* Debug Data - Remove in production */}
         {timetableGenerated && (
-          <Card className="card-shadow">
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h3 className="font-bold mb-2">Debug Data (Current Semester):</h3>
+            <pre className="text-xs overflow-auto max-h-60">
+              {JSON.stringify(getCurrentSemesterData(), null, 2)}
+            </pre>
+          </div>
+        )}
+
+        {/* Timetable Grid */}
+        {timetableGenerated && selectedSemester && (
+          <Card className="shadow-md">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-5 h-5" />
                   <span>
-                    Generated Timetable - Semester {selectedSemester}{" "}
-                    {selectedDepartment}
+                    Generated Timetable - Semester {selectedSemester} {selectedDepartment}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Badge variant="outline" className="course-card-purple">
+                  <Badge variant="outline" className="bg-purple-100 text-purple-800">
                     Lecture
                   </Badge>
-                  <Badge variant="outline" className="course-card-blue">
+                  <Badge variant="outline" className="bg-blue-100 text-blue-800">
                     Lab
                   </Badge>
-                  <Badge variant="secondary">Optimized</Badge>
                 </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <div
-                  className="grid gap-2 min-w-[800px]"
-                  style={{
-                    gridTemplateColumns: `120px repeat(${
-                      timeSlots.filter(
-                        (slot) => includeQCPC || slot.type !== "qcpc"
-                      ).length
-                    }, 1fr)`,
-                  }}
-                >
-                  {/* Header row */}
-                  <div className="font-semibold text-center p-3 bg-muted rounded-lg">
-                    Day / Time
-                  </div>
-                  {timeSlots
-                    .filter((slot) => includeQCPC || slot.type !== "qcpc")
-                    .map((slot) => (
-                      <div
-                        key={slot.label}
-                        className={`font-semibold text-center p-2 rounded-lg text-xs ${
-                          slot.type === "qcpc"
-                            ? "course-card-green"
-                            : slot.type === "break" || slot.type === "lunch"
-                            ? "bg-orange-100 text-orange-800"
-                            : "bg-muted"
-                        }`}
-                      >
-                        <div>{slot.label}</div>
-                        <div className="text-xs opacity-80">
-                          {slot.start} - {slot.end}
-                        </div>
-                      </div>
-                    ))}
-
-                  {/* Day rows */}
-                  {days.map((day) => (
-                    <div key={day} className="contents">
-                      <div className="text-sm font-medium text-center p-3 bg-card border rounded-lg flex items-center justify-center">
-                        {day}
-                      </div>
-                      {timeSlots
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="p-3 border bg-gray-100 font-semibold">Day/Time</th>
+                      {getTimeSlots()
                         .filter((slot) => includeQCPC || slot.type !== "qcpc")
-                        .map((slot) => {
-                          if (slot.type === "break" || slot.type === "lunch") {
-                            return (
-                              <div
-                                key={`${day}-${slot.label}`}
-                                className="p-3 rounded-lg text-sm bg-orange-50 border border-orange-200 flex items-center justify-center"
-                              >
-                                <div className="text-center text-orange-700 font-medium">
-                                  {slot.type === "break" ? "Break" : "Lunch"}
-                                </div>
-                              </div>
-                            );
-                          }
-
-                          if (slot.type === "qcpc") {
-                            return (
-                              <div
-                                key={`${day}-${slot.label}`}
-                                className="p-3 rounded-lg text-sm course-card-green flex items-center justify-center"
-                              >
-                                <div className="text-center font-medium">
-                                  QCPC
-                                </div>
-                              </div>
-                            );
-                          }
-
-                          const classData = timetableData[day]?.[slot.label];
-                          return (
-                            <div
-                              key={`${day}-${slot.label}`}
-                              className={`p-3 rounded-lg text-sm transition-all hover:scale-105 cursor-pointer ${
-                                classData
-                                  ? `${getSubjectStyle(
-                                      classData.type
-                                    )} font-medium elevated-shadow`
-                                  : "time-slot-empty"
-                              }`}
-                            >
-                              {classData ? (
-                                <div className="space-y-1">
-                                  <div className="font-semibold text-xs">
-                                    {classData.subject}
-                                  </div>
-                                  <div className="text-xs opacity-80">
-                                    {classData.faculty}
-                                  </div>
-                                  <div className="text-xs opacity-80">
-                                    {classData.room}
-                                  </div>
-                                  <Badge
-                                    variant="secondary"
-                                    className="text-xs"
-                                  >
-                                    {classData.type}
-                                  </Badge>
-                                </div>
-                              ) : (
-                                <div className="text-center text-muted-foreground text-xs">
-                                  Free Period
-                                </div>
-                              )}
+                        .map((slot) => (
+                          <th 
+                            key={`${slot.start}-${slot.end}`}
+                            className={`p-2 border text-xs ${
+                              slot.type === "qcpc"
+                                ? "bg-green-100"
+                                : slot.type === "break" || slot.type === "lunch"
+                                ? "bg-orange-100"
+                                : "bg-gray-100"
+                            }`}
+                          >
+                            <div>{slot.label}</div>
+                            <div className="text-xs opacity-80">
+                              {slot.start} - {slot.end}
                             </div>
-                          );
-                        })}
-                    </div>
-                  ))}
-                </div>
+                          </th>
+                        ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {days.map((day) => {
+                      const filteredSlots = getTimeSlots().filter((slot) => 
+                        includeQCPC || slot.type !== "qcpc"
+                      );
+
+                      return (
+                        <tr key={day}>
+                          <td className="p-3 border bg-white font-medium">{day}</td>
+                          {filteredSlots.map((slot) => {
+                            const entry = getEntriesForDayAndSlot(day, slot);
+
+                            // Handle special slots first
+                            if (slot.type === "break" || slot.type === "lunch") {
+                              return (
+                                <td
+                                  key={`${day}-${slot.start}-${slot.end}`}
+                                  className="p-3 border bg-orange-50 text-center"
+                                >
+                                  {slot.type === "break" ? "Break" : "Lunch"}
+                                </td>
+                              );
+                            }
+
+                            if (slot.type === "qcpc") {
+                              return (
+                                <td
+                                  key={`${day}-${slot.start}-${slot.end}`}
+                                  className="p-3 border bg-green-100 text-center"
+                                >
+                                  QCPC
+                                </td>
+                              );
+                            }
+
+                            // Regular class entry
+                            return (
+                              <td
+                                key={`${day}-${slot.start}-${slot.end}`}
+                                className={`p-3 border ${getSubjectStyle(entry?.type)}`}
+                              >
+                                {entry ? (
+                                  <div className="space-y-1">
+                                    <div className="font-semibold text-xs">
+                                      {entry.subject || "Class"}
+                                    </div>
+                                    {entry.faculty && (
+                                      <div className="text-xs opacity-80">{entry.faculty}</div>
+                                    )}
+                                    {entry.room && (
+                                      <div className="text-xs opacity-80">{entry.room}</div>
+                                    )}
+                                    {entry.type && (
+                                      <Badge variant="secondary" className="text-xs">
+                                        {entry.type}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div className="text-center text-gray-500 text-xs">
+                                    Free Period
+                                  </div>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
