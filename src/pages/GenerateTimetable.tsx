@@ -28,6 +28,7 @@ type TimeSlot = {
   start: string;
   end: string;
   type?: string;
+  _id?: string;
 };
 
 type TimetableEntry = {
@@ -118,7 +119,25 @@ export default function GenerateTimetable() {
 
   const getTimeSlots = () => {
     const currentSemester = getCurrentSemesterData();
-    return currentSemester?.timeSlots || [];
+    if (!currentSemester?.entries) return [];
+    
+    // Extract unique time slots from entries
+    const slotsMap = new Map<string, TimeSlot>();
+    currentSemester.entries.forEach(entry => {
+      const key = `${entry.timeSlot.start}-${entry.timeSlot.end}`;
+      if (!slotsMap.has(key)) {
+        slotsMap.set(key, {
+          start: entry.timeSlot.start,
+          end: entry.timeSlot.end,
+          label: `${entry.timeSlot.start}-${entry.timeSlot.end}`,
+          type: entry.type === 'qcpc' || entry.type === 'lunch' ? entry.type : undefined
+        });
+      }
+    });
+    
+    return Array.from(slotsMap.values()).sort((a, b) => 
+      a.start.localeCompare(b.start)
+    );
   };
 
   const getEntriesForDayAndSlot = (day: string, timeSlot: TimeSlot) => {
@@ -129,7 +148,22 @@ export default function GenerateTimetable() {
       (entry) => 
         entry.day === day && 
         entry.timeSlot.start === timeSlot.start && 
-        entry.timeSlot.end === timeSlot.end
+        entry.timeSlot.end === timeSlot.end &&
+        entry.type !== 'qcpc' && 
+        entry.type !== 'lunch'
+    );
+  };
+
+  const getSpecialEntryForDayAndSlot = (day: string, timeSlot: TimeSlot) => {
+    const currentSemester = getCurrentSemesterData();
+    if (!currentSemester?.entries) return null;
+    
+    return currentSemester.entries.find(
+      (entry) => 
+        entry.day === day && 
+        entry.timeSlot.start === timeSlot.start && 
+        entry.timeSlot.end === timeSlot.end &&
+        (entry.type === 'qcpc' || entry.type === 'lunch')
     );
   };
 
@@ -203,7 +237,7 @@ export default function GenerateTimetable() {
                   </SelectTrigger>
                   <SelectContent>
                     {departments.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
+                      <SelectItem key={`dept-${dept}`} value={dept}>
                         {dept}
                       </SelectItem>
                     ))}
@@ -263,28 +297,24 @@ export default function GenerateTimetable() {
         {timetableGenerated && semesterData.length > 0 && (
           <div className="flex items-center gap-4">
             <label className="text-sm font-medium">View Semester</label>
-            <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+            <Select 
+              value={selectedSemester} 
+              onValueChange={setSelectedSemester}
+            >
               <SelectTrigger className="h-11">
                 <SelectValue placeholder="Select Semester" />
               </SelectTrigger>
               <SelectContent>
                 {semesterData.map((sem) => (
-                  <SelectItem key={sem._id} value={String(sem.semester)}>
+                  <SelectItem 
+                    key={`sem-${sem._id}`} 
+                    value={String(sem.semester)}
+                  >
                     Semester {sem.semester}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
-        )}
-
-        {/* Debug Data - Remove in production */}
-        {timetableGenerated && (
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <h3 className="font-bold mb-2">Debug Data (Current Semester):</h3>
-            <pre className="text-xs overflow-auto max-h-60">
-              {JSON.stringify(getCurrentSemesterData(), null, 2)}
-            </pre>
           </div>
         )}
 
@@ -319,7 +349,7 @@ export default function GenerateTimetable() {
                         .filter((slot) => includeQCPC || slot.type !== "qcpc")
                         .map((slot) => (
                           <th 
-                            key={`${slot.start}-${slot.end}`}
+                            key={`header-${slot.start}-${slot.end}`}
                             className={`p-2 border text-xs ${
                               slot.type === "qcpc"
                                 ? "bg-green-100"
@@ -343,30 +373,22 @@ export default function GenerateTimetable() {
                       );
 
                       return (
-                        <tr key={day}>
+                        <tr key={`row-${day}`}>
                           <td className="p-3 border bg-white font-medium">{day}</td>
                           {filteredSlots.map((slot) => {
+                            const specialEntry = getSpecialEntryForDayAndSlot(day, slot);
                             const entry = getEntriesForDayAndSlot(day, slot);
+                            const cellKey = `cell-${day}-${slot.start}-${slot.end}`;
 
                             // Handle special slots first
-                            if (slot.type === "break" || slot.type === "lunch") {
+                            if (specialEntry) {
                               return (
                                 <td
-                                  key={`${day}-${slot.start}-${slot.end}`}
-                                  className="p-3 border bg-orange-50 text-center"
+                                  key={cellKey}
+                                  className={`p-3 border ${getSubjectStyle(specialEntry.type)} text-center`}
                                 >
-                                  {slot.type === "break" ? "Break" : "Lunch"}
-                                </td>
-                              );
-                            }
-
-                            if (slot.type === "qcpc") {
-                              return (
-                                <td
-                                  key={`${day}-${slot.start}-${slot.end}`}
-                                  className="p-3 border bg-green-100 text-center"
-                                >
-                                  QCPC
+                                  {specialEntry.type === "qcpc" ? "QCPC" : 
+                                   specialEntry.type === "lunch" ? "Lunch" : "Break"}
                                 </td>
                               );
                             }
@@ -374,7 +396,7 @@ export default function GenerateTimetable() {
                             // Regular class entry
                             return (
                               <td
-                                key={`${day}-${slot.start}-${slot.end}`}
+                                key={cellKey}
                                 className={`p-3 border ${getSubjectStyle(entry?.type)}`}
                               >
                                 {entry ? (
