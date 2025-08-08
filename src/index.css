@@ -135,3 +135,18 @@
     @apply time-slot bg-muted border-2 border-dashed border-border hover:border-primary/50;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .timetable-print, .timetable-print * {
+    visibility: visible;
+  }
+  .timetable-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

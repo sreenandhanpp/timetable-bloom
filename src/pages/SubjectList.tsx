@@ -17,6 +17,7 @@ export default function SubjectList() {
     setLoading(true);
     try {
       const data = await getSubjectList();
+      console.log("Fetched subjects:", data);
       setSubjects(data);
     } catch (err) {
       toast({
