@@ -20,7 +20,7 @@ export const ENDPOINTS = {
     update: (id: string) => `/subjects/${id}`, // PUT/PATCH: Update subject
     delete: (id: string) => `/subjects/${id}`, // DELETE: Remove subject
   },
-   configuration: {
+  configuration: {
     create: "/config", // POST: Add new configuration
     list: "/config", // GET: Fetch all configurations
     details: (id: string) => `/config/${id}`, // GET: Get one configuration
@@ -28,10 +28,16 @@ export const ENDPOINTS = {
     delete: (id: string) => `/config/${id}`, // DELETE: Remove configuration
   },
   timetable: {
-  generate: "/timetable/generate",             // POST: Generate a timetable
-  list: "/timetable",                          // GET: List all timetables
-  bySemester: (semester: number, dept: string) => `/timetable/${semester}/${dept}`, // GET: Get one timetable
-  delete: (semester: number, dept: string) => `/timetable/${semester}/${dept}`,     // DELETE: Remove timetable
-}
-
+    generate: "/timetable/generate", // POST: Generate a timetable
+    list: "/timetable/versions", // GET: List all timetables
+    bySemester: (semester: number, dept: string) =>
+      `/timetable/${semester}/${dept}`, // GET: Get one timetable
+    delete: (semester: number, dept: string) =>
+      `/timetable/${semester}/${dept}`, // DELETE: Remove timetable
+    byVersionType: (type: "odd" | "even", version: number) =>
+      `/timetable/version/${type}/${version}`, // GET: Get all odd/even sem timetables of a version
+    setActive: (type: "odd" | "even", version: number) =>
+      `/timetable/active/${type}/${version}`, // POST: Set active timetable version
+    getActive: (type: "odd" | "even") => `/timetable/active/${type}`, // GET: Get currently active timetable version
+  },
 };

@@ -29,7 +29,9 @@ export const generateTimetable = async (payload: GenerateTimetablePayload) => {
 
 // Get timetable for a specific semester and department
 export const getTimetable = async (semester: number, department: string) => {
-  const { data } = await apiClient.get(ENDPOINTS.timetable.bySemester(semester, department));
+  const { data } = await apiClient.get(
+    ENDPOINTS.timetable.bySemester(semester, department)
+  );
   return data;
 };
 
@@ -41,6 +43,38 @@ export const getAllTimetables = async () => {
 
 // Delete a timetable
 export const deleteTimetable = async (semester: number, department: string) => {
-  const { data } = await apiClient.delete(ENDPOINTS.timetable.delete(semester, department));
+  const { data } = await apiClient.delete(
+    ENDPOINTS.timetable.delete(semester, department)
+  );
+  return data;
+};
+
+// Get all odd/even semester timetables for a specific version
+export const getTimetablesByVersionType = async (
+  type: "odd" | "even",
+  version: number
+) => {
+  const { data } = await apiClient.get(
+    ENDPOINTS.timetable.byVersionType(type, version)
+  );
+  return data;
+};
+
+// Set a timetable version as active
+export const setActiveTimetable = async (
+  type: "odd" | "even",
+  version: number
+) => {
+  const { data } = await apiClient.post(
+    ENDPOINTS.timetable.setActive(type, version)
+  );
+  return data;
+};
+
+// Get currently active timetable version for odd/even
+export const getActiveTimetable = async (type: "odd" | "even") => {
+  const { data } = await apiClient.get(
+    ENDPOINTS.timetable.getActive(type)
+  );
   return data;
 };

@@ -17,6 +17,8 @@ import StaffList from "./pages/StaffList";
 import EditStaff from "./pages/EditStaff";
 import SubjectList from "./pages/SubjectList";
 import EditSubject from "./pages/EditSubject";
+import TimetableList from "./pages/TImetableList";
+import TimetableViewer from "./pages/TimetableViewer";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +39,9 @@ const App = () => (
           <Route path="/admin/subjects" element={<SubjectList />} />
           <Route path="/admin/subjects/add" element={<AddSubjects />} />
           <Route path="/admin/subjects/edit/:id" element={<EditSubject />} />
-          <Route path="/admin/timetable" element={<GenerateTimetable />} />
+          <Route path="/admin/timetable" element={<TimetableList />} />
+          <Route path="/admin/timetable/generate" element={<GenerateTimetable />} />
+          <Route path="/admin/timetable/view/:type/:version" element={<TimetableViewer />} />
           <Route path="/admin/configuration" element={<Configuration />} />
           <Route path="/staff" element={<StaffDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
