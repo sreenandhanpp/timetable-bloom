@@ -78,3 +78,13 @@ export const getActiveTimetable = async (type: "odd" | "even") => {
   );
   return data;
 };
+
+export const getPublicTimetableBySemester = async (
+  semester: number,
+  dept: string
+) => {
+  const { data } = await apiClient.get(
+    ENDPOINTS.timetable.publicBySemester(semester, dept)
+  );
+  return data;
+};

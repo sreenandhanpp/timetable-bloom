@@ -27,17 +27,22 @@ export const ENDPOINTS = {
     update: (id: string) => `/config/${id}`, // PUT/PATCH: Update configuration
     delete: (id: string) => `/config/${id}`, // DELETE: Remove configuration
   },
-  timetable: {
-    generate: "/timetable/generate", // POST: Generate a timetable
-    list: "/timetable/versions", // GET: List all timetables
-    bySemester: (semester: number, dept: string) =>
-      `/timetable/${semester}/${dept}`, // GET: Get one timetable
-    delete: (semester: number, dept: string) =>
-      `/timetable/${semester}/${dept}`, // DELETE: Remove timetable
-    byVersionType: (type: "odd" | "even", version: number) =>
-      `/timetable/version/${type}/${version}`, // GET: Get all odd/even sem timetables of a version
-    setActive: (type: "odd" | "even", version: number) =>
-      `/timetable/active/${type}/${version}`, // POST: Set active timetable version
-    getActive: (type: "odd" | "even") => `/timetable/active/${type}`, // GET: Get currently active timetable version
-  },
+  // Add this to your ENDPOINTS object
+timetable: {
+  generate: "/timetable/generate",
+  list: "/timetable/versions",
+  bySemester: (semester: number, dept: string) =>
+    `/timetable/${semester}/${dept}`,
+  delete: (semester: number, dept: string) =>
+    `/timetable/${semester}/${dept}`,
+  byVersionType: (type: "odd" | "even", version: number) =>
+    `/timetable/version/${type}/${version}`,
+  setActive: (type: "odd" | "even", version: number) =>
+    `/timetable/active/${type}/${version}`,
+  getActive: (type: "odd" | "even") => `/timetable/active/${type}`,
+
+  // ✅ New public API endpoint (no auth)
+  publicBySemester: (semester: number, dept: string) =>
+    `/timetable/public/${semester}/${dept}`,
+}
 };

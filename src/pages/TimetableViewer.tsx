@@ -13,7 +13,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { getTimetablesByVersionType, setActiveTimetable, getActiveTimetable } from "@/api/timetable.api";
 import { getSubjectDetails } from "@/api/subject.api";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 
@@ -300,10 +300,9 @@ export default function TimetableViewer() {
             </CardContent>
           </Card>
         ) : loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <span className="ml-4 text-gray-600">Loading timetable...</span>
-          </div>
+          <div className="flex justify-center py-6">
+                <Loader2 className="w-6 h-6 animate-spin" />
+              </div>
         ) : (
           <div className="space-y-6">
             {/* Semester Selector */}
